@@ -9,11 +9,9 @@ from matrix_utils import (
     sensibilidad_por_perturbacion
 )
 
-# Configuración inicial de la app
 st.set_page_config(page_title="Analizador de Normas Matriciales", layout="centered")
-st.title("✩ Analizador de Normas Matriciales ✩")
+st.markdown("<h1 style='text-align:center;'> Analizador de Normas Matriciales</h1>",unsafe_allow_html=True)
 
-# --- Ingreso dinámico de matriz ---
 st.sidebar.header("Agregar filas o columnas")
 
 if "filas" not in st.session_state:
@@ -72,9 +70,6 @@ st.session_state.df_valores = df_editado
 
 A = df_editado.to_numpy()
 
-# ──────────────────────────────
-# 🔢 Visualizar matriz
-# ──────────────────────────────
 st.subheader(" Matriz ingresada")
 st.dataframe(df_editado.style.format("{:.1f}"), use_container_width=True)
 
@@ -82,34 +77,43 @@ st.dataframe(df_editado.style.format("{:.1f}"), use_container_width=True)
 normas = {
     'Norma L1 (máx suma columnas)': norma_1(A),
     'Norma Frobenius (cuadrática)': norma_frobenius(A),
-    'Norma L2 / Espectral (σ máx)': norma_2(A),
+    'Norma L2 ': norma_2(A),
 }
 
-st.subheader("📋 Normas calculadas")
+st.subheader(" Normas calculadas")
 df_normas = pd.DataFrame({
     "Tipo de norma": list(normas.keys()),
     "Valor": list(normas.values())
 })
 st.table(df_normas.style.format({"Valor": "{:.4f}"}))
 
-st.subheader("📊 Comparación gráfica")
-fig, ax = plt.subplots(figsize=(7, 4))
-colores = ['#1f77b4', '#2ca02c', '#d62728']
+st.subheader("Comparación gráfica de Normas Matriciales")
+
+fig, ax = plt.subplots(figsize=(8, 5))
+colores = ["#a74e7f", "#7b4fa1", "#576ce1"]  
 nombres = list(normas.keys())
 valores = list(normas.values())
 
-for i, valor in enumerate(valores):
-    ax.plot(i, valor, 'o', markersize=10, color=colores[i])
-    ax.text(i, valor + 0.2, f'{valor:.4f}', ha='center', fontsize=9)
+for i, (nombre, valor) in enumerate(zip(nombres, valores)):
+    ax.plot(i, valor, 'o', markersize=10, color=colores[i], label=nombre)
+    ax.vlines(x=i, ymin=0, ymax=valor, linestyles='dashed', colors=colores[i], alpha=0.7)
+    ax.text(i, valor + 0.2, f'{valor:.4f}', ha='center', fontsize=10, fontweight='bold')
 
 ax.set_xticks(range(len(nombres)))
-ax.set_xticklabels(nombres, rotation=15)
-ax.set_ylabel("Magnitud")
-ax.grid(axis='y', linestyle='--', alpha=0.7)
+ax.set_xticklabels(nombres, rotation=10, fontsize=10)
+ax.set_ylabel("Magnitud", fontsize=11)
+ax.set_title("Comparación de Normas Matriciales", fontsize=13, fontweight='bold')
+ax.grid(axis='y', linestyle='--', alpha=0.5)
+ax.set_axisbelow(True)
+
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+
 st.pyplot(fig)
 
 
-# Calcular sensibilidad
+
+
 delta, cambio = sensibilidad_por_perturbacion(A)
 sensibilidad_relativa = cambio / delta if delta != 0 else 0
 
@@ -122,7 +126,6 @@ elif sensibilidad_relativa > 0.2:
 else:
     conclusion = "🟢 La matriz es **muy estable numéricamente**."
 
-# Mostrar conclusiones (ya no hay comparación con norma ∞)
 st.markdown(f"""
 ### Análisis obtenido:
 {conclusion}

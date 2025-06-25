@@ -3,7 +3,6 @@ import numpy as np
 def norma_1(A):
     return np.linalg.norm(A, 1)
 
-
 def norma_frobenius(A):
     return np.linalg.norm(A, 'fro')
 

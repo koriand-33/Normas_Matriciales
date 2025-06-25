@@ -25,3 +25,16 @@ Este proyecto presenta visualmente cómo se comportan las distintas normas y có
    ```bash
    git clone https://github.com/koriand-33/Normas_Matriciales.git
    cd Normas_Matriciales
+
+2. Instala los requerimientos
+   ```bash
+   pip install -r requirements.txt
+
+3. Ejecuta la app de Stremlit:
+   ```bash
+   streamlit run app.py
+
+## Opción en terminal sin descargar Streamlit: ##
+
+   ```bash
+   python main.py
